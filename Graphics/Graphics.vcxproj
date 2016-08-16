@@ -69,8 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\dep\glfw-3.2\include;$(SolutionDir)\dep\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)dep\glfw-3.2\include;$(SolutionDir)dep\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -117,9 +117,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\Gizmos.cpp" />
     <ClCompile Include="src\gl_core_4_4.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gizmos.h" />
     <ClInclude Include="src\gl_core_4_4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
