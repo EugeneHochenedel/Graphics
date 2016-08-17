@@ -49,9 +49,11 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		Gizmos::clear;
+		Gizmos::clear();
 
 		//Gizmos::addTransform(glm::mat4(1));
+		
+		Gizmos::addSphere(glm::vec3(5, 5, 5), 1, 3, 3, glm::vec4(0, 0, 200, 1)/*, nullptr, 0, 360.0f, -90.0f, 90.0f*/);
 
 		vec4 white(1);
 		vec4 black(0, 0, 0, 1);
