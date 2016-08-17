@@ -53,7 +53,7 @@ int main()
 
 		//Gizmos::addTransform(glm::mat4(1));
 		
-		Gizmos::addSphere(glm::vec3(5, 5, 5), 1, 3, 3, glm::vec4(0, 0, 200, 1)/*, nullptr, 0, 360.0f, -90.0f, 90.0f*/);
+		Gizmos::addSphere(glm::vec3(5, 5, 5), 1, 50, 50, glm::vec4(0, 0, 200, 1), nullptr, 0, 360.0f, -90.0f, 90.0f);
 
 		vec4 white(1);
 		vec4 black(0, 0, 0, 1);

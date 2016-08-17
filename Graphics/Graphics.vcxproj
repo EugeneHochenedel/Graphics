@@ -73,8 +73,8 @@
     <LibraryPath>$(SolutionDir)dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\eugen\Documents\GitHub\Graphics\dep\glfw-3.2\include;C:\Users\eugen\Documents\GitHub\Graphics\dep\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\eugen\Documents\GitHub\Graphics\dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)dep\glfw-3.2\include;$(SolutionDir)dep\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
