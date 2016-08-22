@@ -32,5 +32,8 @@
     <ClInclude Include="src\Gizmos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
