@@ -1,4 +1,5 @@
 #define GLM_SWIZZLE
+#define GLM_FORCE_PURE
 
 #include "Gizmos.h"
 #include "gl_core_4_4.h"
