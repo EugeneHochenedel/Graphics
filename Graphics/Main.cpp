@@ -46,8 +46,8 @@ int main()
 	mat4 Rings = mat4(1);
 
 	mat4 Satellite = mat4(1);
-	
-	float angle = 0.0f;
+
+	float angle = 0.0f, angle1 = 0.0f, angle2 = 0.0f;
 
 	auto major = ogl_GetMajorVersion();
 	auto minor = ogl_GetMinorVersion();
@@ -62,21 +62,26 @@ int main()
 
 		Gizmos::clear();
 
+		//Increments the number of degrees the objects move over time
+		//CONTROLS ORBIT SPEED!
 		angle += 0.01f;
+		angle1 += 0.05f;
 
 		mat4 angled = rotate(angle, vec3(0, 1, 0));
+		mat4 angled1 = rotate(angle1, vec3(0, 1, 0));
 
-		Star = Star * angled;
+		Star = mat4(1) * angled;
 
 		ExoPlanet = Star * glm::translate(vec3(5, 0, 6)) * rotate(72.0f, vec3(0, 1, 0));
 
-		Rings = rotate(32.0f, vec3(0, 0, 1));
+		Rings = rotate(ExoPlanet, 32.0f, vec3(0, 0, 1));
 
-		Satellite = ExoPlanet * glm::translate(vec3(3, 0, 0)) * rotate(23.0f, vec3(0, 1, 0));
+		Satellite = (ExoPlanet * angled1) * glm::translate(vec3(3, 0, 0));
 
+		//Uses the Gizmos class to draw objects to the screen which represent diffrent celestial bodies in a star system
 		Gizmos::addSphere(vec3(Star[3]), 1, 20, 20, vec4(1, 1, 0, 1), &Star);
 		Gizmos::addSphere(vec3(ExoPlanet[3]), 0.5f, 15, 15, vec4(0, 0.39f, 0, 1), &ExoPlanet);
-		Gizmos::addRing(vec3(ExoPlanet[3]), 1.5f, 0.75f, 50, vec4(0.54f, 0.27f, 0.07f, 1), &Rings);
+		Gizmos::addRing(vec3(ExoPlanet[3]), 1.5f, 0.75f, 10, vec4(0.54f, 0.27f, 0.07f, 1), &Rings);
 		Gizmos::addSphere(vec3(Satellite[3]), 0.25f, 10, 10, vec4(0.25f, .25f, .25f, 1), &Satellite);
 		
 		vec4 white(1);
