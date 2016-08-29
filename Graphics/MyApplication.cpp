@@ -2,13 +2,21 @@
 
 MyApplication::MyApplication()
 {
+
 }
 
 bool MyApplication::startup()
 {
+	white = vec4(1);
+	red = vec4(1, 0, 0, 1);
+	yellow = vec4(1, 1, 0, 1);
+	green = vec4(0, 0.39f, 0, 1);
+	brown = vec4(0.54f, 0.27f, 0.07f, 0.5f);
+	grey = vec4(0.25f, 0.25f, 0.25f, 1);
+
 	if (glfwInit() == false)
 	{
-		return -1;
+		return false;
 	}
 
 	screen = glfwCreateWindow(1280, 720, "Intro to OpenGL", nullptr, nullptr);
@@ -16,7 +24,7 @@ bool MyApplication::startup()
 	if (screen == nullptr)
 	{
 		glfwTerminate();
-		return -2;
+		return false;
 	}
 
 	glfwMakeContextCurrent(screen);
@@ -25,7 +33,7 @@ bool MyApplication::startup()
 	{
 		glfwDestroyWindow(screen);
 		glfwTerminate();
-		return -3;
+		return false;
 	}
 
 	Gizmos::create();
@@ -72,13 +80,7 @@ bool MyApplication::update()
 
 void MyApplication::draw()
 {
-	white = vec4(1);
-	red = vec4(1, 0, 0, 1);
-	yellow = vec4(1, 1, 0, 1);
-	green = vec4(0, 0.39f, 0, 1);
-	brown = vec4(0.54f, 0.27f, 0.07f, 0.5f);
-	grey = vec4(0.25f, 0.25f, 0.25f, 1);
-
+	
 	Gizmos::addSphere(vec3(Star[3]), 1, 20, 20, yellow, &Star);
 	Gizmos::addSphere(vec3(Exoplanet[3]), 0.5f, 15, 15, green, &Exoplanet);
 	Gizmos::addRing(vec3(Exoplanet[3]), 1.5f, 0.75f, 10, brown, &Rings);

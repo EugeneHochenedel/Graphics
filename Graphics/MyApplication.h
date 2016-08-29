@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include "src\gl_core_4_4.h"
 #include <GLFW\glfw3.h>
@@ -12,17 +14,27 @@ using glm::rotate;
 using glm::translate;
 using namespace std;
 
-#define GLM_SWIZZLE
-#define GLM_FORCE_PURE
+//#define GLM_SWIZZLE
+//#define GLM_FORCE_PURE
 
-class MyApplication
+class Runner
+{
+public:
+	virtual bool startup() = 0;
+	virtual bool update() = 0;
+	virtual void draw() = 0;
+	virtual void shutdown() = 0;
+
+};
+
+class MyApplication : public Runner
 {
 public:
 	MyApplication();
-	bool startup();
-	bool update();
-	void draw();
-	void shutdown();
+	bool startup() override;
+	bool update() override;
+	void draw() override;
+	void shutdown() override;
 
 	GLFWwindow* screen;
 	mat4 view, projection, Star, Exoplanet, Satellite, Rings;
