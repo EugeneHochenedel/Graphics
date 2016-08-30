@@ -37,7 +37,7 @@ public:
 	void shutdown() override;
 
 	GLFWwindow* screen;
-	mat4 view, projection, Star, Exoplanet, Satellite, Rings;
+	mat4 view, projection, inverted, Star, Exoplanet, Satellite, Rings;
 	
 	float rotAngle;
 	vec4 green, red, white, brown, grey, yellow;

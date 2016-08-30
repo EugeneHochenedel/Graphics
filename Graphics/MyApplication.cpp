@@ -14,6 +14,8 @@ bool MyApplication::startup()
 	brown = vec4(0.54f, 0.27f, 0.07f, 0.5f);
 	grey = vec4(0.25f, 0.25f, 0.25f, 1);
 
+	
+
 	if (glfwInit() == false)
 	{
 		return false;
@@ -38,12 +40,43 @@ bool MyApplication::startup()
 
 	Gizmos::create();
 
-	view = glm::lookAt(vec3(0, 4, 20), vec3(0), vec3(0, 2, 0));
+	float previousTime;
+	float currentTime = (float)glfwGetTime();
+	previousTime = currentTime;
+	float deltaTime = currentTime - previousTime;
+	
+	view = glm::lookAt(vec3(0, 4, 20), vec3(5, 2, 1), vec3(0, 2, 0));
 	projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
+
+
+	inverted = glm::inverse(view);
+
+	//mat4 secondInvert = glm::inverse(inverted);
 
 	auto major = ogl_GetMajorVersion();
 	auto minor = ogl_GetMinorVersion();
 	printf("GL: %i.%i\n", major, minor);
+
+	/*printf("Inverted: %f, %f, %f, %f\n", inverted[0][0], inverted[0][1], inverted[0][2], inverted[0][3]);
+	printf("Inverted: %f, %f, %f, %f\n", inverted[1][0], inverted[1][1], inverted[1][2], inverted[1][3]);
+	printf("Inverted: %f, %f, %f, %f\n", inverted[2][0], inverted[2][1], inverted[2][2], inverted[2][3]);
+	printf("Inverted: %f, %f, %f, %f\n", inverted[3][0], inverted[3][1], inverted[3][2], inverted[3][3]);*/
+
+	for (int i = 0; i < 4; i++)
+	{
+		cout << "{ ";
+		for (int j = 0; j < 4; j++)
+		{
+			printf("%f ", inverted[i][j]);
+		}
+		cout << "} \n";
+	}
+
+	//vec3 newTranslate = translate(inverted[0]);
+	cout << "\n\n\n";
+
+	cout << glm::to_string(inverted) << endl;
+
 
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
