@@ -7,6 +7,9 @@
 #include <glm.hpp>
 #include <ext.hpp>
 
+#define GLM_SWIZZLE
+#define GLM_FORCE_PURE
+
 struct Vertex
 {
 	glm::vec4 position;
@@ -30,8 +33,10 @@ public:
 	bool startup() override;
 	bool update() override;
 	void draw() override;
-	void generateGrid(unsigned int, unsigned int);
 	void shutdown() override;
+
+
+	void generateGrid(unsigned int, unsigned int);
 
 private:
 	GLFWwindow *screen;
@@ -40,4 +45,7 @@ private:
 	unsigned int m_VAO;
 	unsigned int m_VBO;
 	unsigned int m_IBO;
+
+	//ID of compiled shader
+	unsigned int m_programID;
 };
