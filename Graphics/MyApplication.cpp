@@ -45,7 +45,7 @@ bool MyApplication::startup()
 	previousTime = currentTime;
 	float deltaTime = currentTime - previousTime;
 	
-	view = glm::lookAt(vec3(0, 4, 20), vec3(5, 2, 1), vec3(0, 2, 0));
+	view = glm::lookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 	projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
 
 
