@@ -2,6 +2,28 @@
 
 Renderer::Renderer()
 {
+	glfwInit();
+	screen = glfwCreateWindow(1280, 720, "Rendering Geometry", nullptr, nullptr);
+
+	if (screen == nullptr)
+	{
+		glfwTerminate();
+	}
+
+	glfwMakeContextCurrent(screen);
+
+	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
+	{
+		glfwDestroyWindow(screen);
+		glfwTerminate();
+	}
+
+	glm::mat4 view = glm::lookAt(glm::vec3(10, 10, 10), glm::vec3(0), glm::vec3(0, 1, 0));
+	glm::mat4 projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
+
+	glClearColor(0, 0, 0, 1);
+	glEnable(GL_DEPTH_TEST);
+
 }
 
 //Function to create a grid
@@ -141,15 +163,26 @@ bool Renderer::startup()
 
 bool Renderer::update()
 {
+	while (glfwWindowShouldClose(screen) == false && glfwGetKey(screen, GLFW_KEY_ESCAPE) != GLFW_PRESS)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		return true;
+	}
+
 	return false;
 }
 
 void Renderer::draw()
 {
 
+
+	glfwSwapBuffers(screen);
+	glfwPollEvents();
 }
 
 void Renderer::shutdown()
 {
-
+	glfwDestroyWindow(screen);
+	glfwTerminate();
 }
