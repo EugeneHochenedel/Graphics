@@ -39,6 +39,8 @@ public:
 	void generateGrid(unsigned int, unsigned int);
 
 private:
+	glm::mat4 view, projection, m_projectionViewMatrix;
+
 	GLFWwindow *screen;
 
 	//Vertex and Index buffers
@@ -48,4 +50,6 @@ private:
 
 	//ID of compiled shader
 	unsigned int m_programID;
+
+	unsigned int indexCounter;
 };

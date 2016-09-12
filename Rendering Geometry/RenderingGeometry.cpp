@@ -18,10 +18,10 @@ Renderer::Renderer()
 		glfwTerminate();
 	}
 
-	glm::mat4 view = glm::lookAt(glm::vec3(10, 10, 10), glm::vec3(0), glm::vec3(0, 1, 0));
-	glm::mat4 projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
+	view = glm::lookAt(glm::vec3(10, 10, 10), glm::vec3(0), glm::vec3(0, 1, 0));
+	projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
 
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.25f, 0.25f, 0.25f, 1);
 	glEnable(GL_DEPTH_TEST);
 
 }
@@ -41,11 +41,10 @@ void Renderer::generateGrid(unsigned int rows, unsigned int columns)
 			aoVertices[i * columns + j].colour = glm::vec4(colour, 1);
 		}
 	}
-	//More to come
-
+	
 	//Defines index count based off quad count (2 triangles per quad)
 	//Creates an index array as the grid is being drawn
-	unsigned int *auiIndices = new unsigned int[(rows - 1) * (columns - 1) * 6];
+	unsigned int* auiIndices = new unsigned int[(rows - 1) * (columns - 1) * 6];
 
 	unsigned int index = 0;
 	for (unsigned int i = 0; i < (rows - 1); i++)
@@ -96,15 +95,12 @@ void Renderer::generateGrid(unsigned int rows, unsigned int columns)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-
-
-
-
-	delete[] aoVertices;
+	delete[] aoVertices, auiIndices;
 }
 
 bool Renderer::startup()
 {
+	
 	//Creates shaders
 	//Stores written out shader code in character arrays to be processed by OpenGL
 	//"in" specifies input to the shader
@@ -114,7 +110,7 @@ bool Renderer::startup()
 							layout(location=0) in vec4 position; \
 							layout(location=1) in vec4 colour; \
 							out vec4 vColour; \
-							uniform mat4 projectionViewWorldMAtrix; \
+							uniform mat4 projectionViewWorldMatrix; \
 							void main() { vColour = colour; gl_Position = projectionViewWorldMatrix * position; }";
 
 	const char *fsSource = "#version 410\n \
@@ -131,8 +127,6 @@ bool Renderer::startup()
 	glCompileShader(vertexShader);
 	glShaderSource(fragmentShader, 1, (const char**)&fsSource, 0);
 	glCompileShader(fragmentShader);
-
-	//glBindAttribLocation(vertexShader, fragmentShader, "Temp");
 
 	m_programID = glCreateProgram();
 	glAttachShader(m_programID, vertexShader);
@@ -155,9 +149,6 @@ bool Renderer::startup()
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
 
-
-
-
 	return true;
 }
 
@@ -166,7 +157,6 @@ bool Renderer::update()
 	while (glfwWindowShouldClose(screen) == false && glfwGetKey(screen, GLFW_KEY_ESCAPE) != GLFW_PRESS)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		return true;
 	}
 
@@ -175,7 +165,19 @@ bool Renderer::update()
 
 void Renderer::draw()
 {
+	unsigned int rows = 4;
+	unsigned int columns = 4;
+	generateGrid(rows, columns);
+	m_projectionViewMatrix = projection * view;
 
+	glUseProgram(m_programID);
+	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_projectionViewMatrix));
+
+	glBindVertexArray(m_VAO);
+	indexCounter = (rows - 1) * (columns - 1) * 6;
+	//Exception thrown when passing in GL_UNSIGNED_INT
+	glDrawElements(GL_TRIANGLES, indexCounter, GL_UNSIGNED_INT, 0);
 
 	glfwSwapBuffers(screen);
 	glfwPollEvents();
