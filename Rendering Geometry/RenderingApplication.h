@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <math.h>
+#include <vector>
+#include <list>
 #include "src\gl_core_4_4.h"
 #include <GLFW\glfw3.h>
 #include "src\Gizmos.h"
@@ -36,7 +39,12 @@ public:
 	void shutdown() override;
 
 
-	void generateGrid(unsigned int, unsigned int);
+	void generateGrid();
+	//void generateCube();
+	std::vector<glm::vec4> generateHalfPoints(int, float);
+	std::vector<unsigned int> generateIndices(int, int);
+	void generateHalfCircle();
+	//void generateSphere();
 
 private:
 	glm::mat4 view, projection, m_projectionViewMatrix;
