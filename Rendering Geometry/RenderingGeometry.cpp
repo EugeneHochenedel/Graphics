@@ -30,12 +30,12 @@ Renderer::Renderer()
 void Renderer::generateGrid(unsigned int rows, unsigned int columns)
 {
 	Vertex aoPoints[4];
-	unsigned int auiIndex[4] = { 0, 1, 2, 3 };
+	unsigned int auiIndex[4] = { 0, 2, 1, 3 };
 
-	aoPoints[0].position = glm::vec4(2, 0, 4, 0);
-	aoPoints[1].position = glm::vec4(2, 0, -4, 0);
-	aoPoints[2].position = glm::vec4(-4, 0, -4, 0);
-	aoPoints[3].position = glm::vec4(-4, 0, 4, 0);
+	aoPoints[0].position = glm::vec4(4, 0, 4, 1);
+	aoPoints[1].position = glm::vec4(4, 0, -4, 1);
+	aoPoints[2].position = glm::vec4(-4, 0, -4, 1);
+	aoPoints[3].position = glm::vec4(-4, 0, 4, 1);
 	
 	aoPoints[0].colour = glm::vec4(1, 0, 0, 1);
 	aoPoints[1].colour = glm::vec4(0, 1, 0, 1);
