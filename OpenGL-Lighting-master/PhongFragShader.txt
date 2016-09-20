@@ -21,24 +21,37 @@ uniform vec3 cameraPosition;
 uniform float specularPower;
 
 void main() {
-	
-	vec3 incidentRay = normalize(lightDirection);
-	vec3 surfaceNormal = normalize(vNormal.xyz);
-	vec3 lightReflect = 2 * dot(surfaceNormal, incidentRay) * surfaceNormal - incidentRay;
-	vec3 viewDirection = normalize(cameraPosition - vPosition.xyz);
-
-	float specularTerm = pow(max(0.0f, dot(lightReflect, viewDirection)), specularPower);
-
+	//Vectors that represent colors
 	vec3 Red = vec3(250, 0, 0);
 	vec3 Green = vec3(0, 250, 0);
 	vec3 Blue = vec3(0, 0, 250);
-
-	float temp = dot(surfaceNormal, vec3(0, 1.0f, 0));
-	vec3 hemisphere = 0.5f * mix(Red, Blue, temp) + 0.5f;
-
-	vec3 Ambient = Ka * (Ia * 0.01f) * hemisphere;
-	vec3 Diffuse = Kd * Id * specularTerm;
 	
+	//Light properties
+	vec3 incidentRay = normalize(lightDirection);
+	vec3 surfaceNormal = normalize(vNormal.xyz);
+	vec3 lightReflect = 2 * dot(surfaceNormal, incidentRay) * surfaceNormal - incidentRay;
+	//vec3 lightReflect = reflect(incidentRay, surfaceNormal);
+	vec3 viewDirection = normalize(cameraPosition - vPosition.xyz);
+	
+	//Controls the sharpness of the specular reflection
+	float specularTerm = pow(max(0.0f, dot(viewDirection, -lightReflect)), specularPower);
+	
+	//Determines how much light is reflecting off the surface
+	float lambertTerm = max(0.0f, dot(surfaceNormal, -incidentRay));
+	
+	//Controls the direction of the ambient hemisphere
+	float angle = dot(surfaceNormal, vec3(0, 1, 0));
+	float a = 0.5 + 0.5 * angle;
+	
+	//Controls the color effect of ambient lighting on the surface
+	vec3 hemisphere = 0.5f * mix(Red, Blue, angle) + 0.5f;
 
-	fragColour = vec4(Ambient, 1);
+	//Color of indirect light
+	vec3 Ambient = Ka * (Ia * 0.01f) * hemisphere;
+	//Color of reflected light in multiple directions
+	vec3 Diffuse = Kd * lambertTerm * Id;
+	//Color of a single ray of light reflected off the surface
+	vec3 Specular = Ks * Is * specularTerm;
+
+	fragColour = vec4(Ambient + Diffuse + Specular, 1);
 }
