@@ -30,7 +30,6 @@ void main() {
 	vec3 incidentRay = normalize(lightDirection);
 	vec3 surfaceNormal = normalize(vNormal.xyz);
 	vec3 lightReflect = 2 * dot(surfaceNormal, incidentRay) * surfaceNormal - incidentRay;
-	//vec3 lightReflect = reflect(incidentRay, surfaceNormal);
 	vec3 viewDirection = normalize(cameraPosition - vPosition.xyz);
 	
 	//Controls the sharpness of the specular reflection
@@ -41,7 +40,6 @@ void main() {
 	
 	//Controls the direction of the ambient hemisphere
 	float angle = dot(surfaceNormal, vec3(0, 1, 0));
-	float a = 0.5 + 0.5 * angle;
 	
 	//Controls the color effect of ambient lighting on the surface
 	vec3 hemisphere = 0.5f * mix(Red, Blue, angle) + 0.5f;
