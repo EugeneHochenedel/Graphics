@@ -41,10 +41,12 @@ public:
 
 	void generateGrid();
 	//void generateCube();
-	std::vector<glm::vec4> generateHalfPoints(int, float);
-	std::vector<unsigned int> generateIndices(int, int);
+	Vertex* generateHalfCirclePoints(unsigned int, float);
+	Vertex* generateCircPoints(unsigned int, unsigned int, Vertex* &halfSphere);
+	unsigned int* generateIndices(unsigned int, unsigned int);
 	void generateHalfCircle();
 	//void generateSphere();
+	std::vector<unsigned int> indicesHolder;
 
 private:
 	glm::mat4 view, projection, m_projectionViewMatrix;

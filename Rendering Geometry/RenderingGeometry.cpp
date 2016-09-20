@@ -85,45 +85,61 @@ void Renderer::generateGrid()
 //	unsigned int indecies1[4] = { 0, 2, 1, 3 };
 //}
 
-std::vector<glm::vec4> Renderer::generateHalfPoints(int points, float radius)
+Vertex* Renderer::generateHalfCirclePoints(unsigned int points, float radius)
 {
-	std::vector<glm::vec4> vertices;
+	Vertex* vertices = new Vertex[points];
 	for (int i = 0; i < points; i++)
 	{
 		float angle = glm::pi<float>() * (i / (points - 1));
-		glm::vec4 location = glm::vec4(cos(angle) * radius, sin(angle) * radius, 0, 1);
-		vertices.push_back(location);
+		vertices[i].position = glm::vec4(cos(angle) * radius, sin(angle) * radius, 0, 1);
+		//vertices.push_back(location);
 	}
 	return vertices;
 }
 
-//Mr. Matt's function for generating indices
-std::vector<unsigned int> Renderer::generateIndices(int numberMeridians, int numberPoints)
+Vertex* Renderer::generateCircPoints(unsigned int sides, unsigned int miridians, Vertex* &halfSphere)
 {
-	std::vector<unsigned int> indices;
+	int count = 0;
+	Vertex* verts = new Vertex[sides * miridians];
 
-	//j=np-1
-	//
-	//2		5	8	11	14	17
-	//1		4	7	10	13	16
-	//0		3	6	9	12	15
-	//
-
-	for (unsigned int i = 0; i < numberMeridians; i++) //numberMeridians = 4
+	for (int i = 0; i < miridians; i++)
 	{
-		unsigned int start = i * numberPoints;
-		for (int j = 0; j < numberPoints; j++) //numberPoints = 3
+		float phi = 2.0f * glm::pi<float>() * ((float)i / (float)miridians);
+		for (int j = 0; j < sides; j++, count++)
 		{
-			unsigned int botR = (start + numberPoints + j);
-			unsigned int botL = (start + j);
-			indices.push_back(botL);
-			indices.push_back(botR);
+			float x = halfSphere[j].position.x;
+			float y = halfSphere[j].position.y * cos(phi) - halfSphere[j].position.z * sin(phi);
+			float z = halfSphere[j].position.z * cos(phi) + halfSphere[j].position.y * sin(phi);
+
+			verts[count].position = glm::vec4(x, y, z, 1);
+			verts[count].colour = glm::vec4(1, 0, 0, 1);
 		}
-		indices.push_back(0xFFFF);
-	} //we copied the origin whenever we rotated around nm + 1 times so we don't need to get the end again
+	}
+	return verts;
+}
 
-	
+unsigned int* Renderer::generateIndices(unsigned int vertices, unsigned int miridians)
+{
+	unsigned int* indices = new unsigned int[2 * (vertices * (miridians + 1))];
+	indexCounter = 2 * (vertices * (miridians + 1));
 
+	for (unsigned int i = 0; i < miridians; i++)
+	{
+		unsigned int starter = i * vertices;
+		for (int j = 0; j < vertices; j++)
+		{
+			unsigned int botR = ((starter + vertices + j) % (vertices * miridians));
+			unsigned int botL = ((starter + j) % (vertices*miridians));
+			indicesHolder.push_back(botL);
+			indicesHolder.push_back(botR);
+		}
+		indicesHolder.push_back(0xFFFF);
+	}
+
+	for (int i = 0; i < indicesHolder.size(); i++)
+	{
+		indices[i] = indicesHolder[i];
+	}
 	return indices;
 }
 
@@ -132,14 +148,18 @@ void Renderer::generateHalfCircle()
 	unsigned int radians = 5;
 	unsigned int parts = 5;
 	float dist = 2.0f;
+	unsigned int size = (parts) * (radians);
 
-	std::vector<glm::vec4> aoPoints = generateHalfPoints(radians, dist);
-	std::vector<unsigned int> auiIndex = generateIndices(parts, radians);
+	Vertex* vertices = new Vertex[size];
+	unsigned int* indices;
+
+	Vertex* aoPoints = generateHalfCirclePoints(radians, dist);
+	vertices = generateCircPoints(radians, parts, aoPoints);
+	indices = generateIndices(radians, parts);
+	//std::vector<unsigned int> auiIndex = generateIndices(parts, radians);
 
 	//Vertex Temps[aoPoints.size];
 	//Temps.position = aoPoints.data();
-	
-	indexCounter = auiIndex.size();
 
 	glGenBuffers(1, &m_VBO);
 	glGenBuffers(1, &m_IBO);
@@ -148,7 +168,7 @@ void Renderer::generateHalfCircle()
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, aoPoints.size() * sizeof(glm::vec4), aoPoints.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
@@ -156,7 +176,7 @@ void Renderer::generateHalfCircle()
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(glm::vec4)));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCounter * sizeof(unsigned int), auiIndex.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCounter * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 
@@ -240,10 +260,11 @@ void Renderer::draw()
 	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_projectionViewMatrix));
 	
-	generateGrid();
+	generateHalfCircle();
 	glBindVertexArray(m_VAO);
+	glPointSize(5.0f);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glDrawElements(GL_TRIANGLE_STRIP, indexCounter, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_POINTS, indexCounter, GL_UNSIGNED_INT, 0);
 	
 	/*generateHalfCircle();
 	glBindVertexArray(m_VAO);
