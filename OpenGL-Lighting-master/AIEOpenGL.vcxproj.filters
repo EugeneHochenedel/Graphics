@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Tutorials">
+      <UniqueIdentifier>{f9b5163b-1602-4f61-9feb-18c1bfc74fd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tutorials\lighting">
+      <UniqueIdentifier>{711f4b73-9c80-421f-8087-c16dcb09e119}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Imgui">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\models">
+      <UniqueIdentifier>{3f7047c1-5c4f-4e21-8a2f-fd40b2243017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\textures">
+      <UniqueIdentifier>{9a08f685-8123-4455-91fe-733fe3546076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{3365f64e-818d-4a6e-8143-94a4aab78fbb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\BaseApplication.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gizmos.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_core_4_4.c">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Tutorials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorials\LightingOBJApplication.cpp">
+      <Filter>Tutorials\lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorials\LightingSphereApplication.cpp">
+      <Filter>Tutorials\lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\imgui\imgui_draw.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\imgui\imgui.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_impl_glfw_gl3.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\imgui_impl_glfw_gl3.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dep\imgui\imgui.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dep\imgui\imgui_internal.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorials\LightingOBJApplication.h">
+      <Filter>Tutorials\lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorials\LightingSphereApplication.h">
+      <Filter>Tutorials\lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseApplication.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gizmos.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl_core_4_4.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="bin\shaders\phong.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="bin\shaders\phong.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

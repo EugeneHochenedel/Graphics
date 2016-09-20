@@ -1,0 +1,44 @@
+// classic Phong equation
+#version 410
+
+in vec4 vNormal;
+in vec4 vPosition;
+
+out vec4 fragColour;
+
+uniform vec3 Ka;
+uniform vec3 Ia;
+
+uniform vec3 Kd;
+uniform vec3 Id;
+
+uniform vec3 Ks;
+uniform vec3 Is;
+
+uniform vec3 lightDirection;
+uniform vec3 cameraPosition;
+
+uniform float specularPower;
+
+void main() {
+	
+	vec3 incidentRay = normalize(lightDirection);
+	vec3 surfaceNormal = normalize(vNormal.xyz);
+	vec3 lightReflect = 2 * dot(surfaceNormal, incidentRay) * surfaceNormal - incidentRay;
+	vec3 viewDirection = normalize(cameraPosition - vPosition.xyz);
+
+	float specularTerm = pow(max(0.0f, dot(lightReflect, viewDirection)), specularPower);
+
+	vec3 Red = vec3(250, 0, 0);
+	vec3 Green = vec3(0, 250, 0);
+	vec3 Blue = vec3(0, 0, 250);
+
+	float temp = dot(surfaceNormal, vec3(0, 1.0f, 0));
+	vec3 hemisphere = 0.5f * mix(Red, Blue, temp) + 0.5f;
+
+	vec3 Ambient = Ka * (Ia * 0.01f) * hemisphere;
+	vec3 Diffuse = Kd * Id * specularTerm;
+	
+
+	fragColour = vec4(Ambient, 1);
+}
