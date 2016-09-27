@@ -67,9 +67,11 @@ void Texture::simpleQuad()
 
 bool Texture::startup()
 {
+	simpleQuad();
+
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 
-	unsigned char* data = stbi_load("./dep/stb/data/textures/crate.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+	unsigned char* data = stbi_load("data/textures/crate.png", &imageWidth, &imageHeight, &imageFormat, STBI_rgb);
 
 	//Generates an OpenGL texture handle
 	glGenTextures(1, &m_texture);
@@ -101,6 +103,7 @@ bool Texture::startup()
 							FragColor = texture(diffuse,vTexCoord); \
 							}";
 
+	int success = GL_FALSE;
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, (const char**)&vsSource, 0);
 	glCompileShader(vertexShader);
@@ -135,7 +138,7 @@ void Texture::draw()
 {
 	glUseProgram(m_programID);
 
-	int loc = glGetUniformLocation(m_programID, "ProjectionView");
+	unsigned int loc = glGetUniformLocation(m_programID, "ProjectionView");
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
@@ -145,6 +148,9 @@ void Texture::draw()
 
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+	glfwSwapBuffers(screen);
+	glfwPollEvents();
 }
 
 void Texture::shutdown()
