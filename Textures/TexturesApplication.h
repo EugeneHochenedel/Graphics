@@ -1,9 +1,15 @@
+#pragma once
+
 #include <iostream>
 #include "src\gl_core_4_4.h"
 #include "src\Gizmos.h"
 #include <GLFW\glfw3.h>
 #include <glm.hpp>
 #include <ext.hpp>
+#include <math.h>
+#include <vector>
+#include <fstream>
+#include <string>
 
 class Application
 {
@@ -22,11 +28,14 @@ public:
 	bool update() override;
 	void draw() override;
 	void shutdown() override;
-	void simpleQuad();
+	void createQuad();
+	std::string ReadIn(std::string);
 
 private:
 	GLFWwindow* screen;
-	glm::mat4 view, projection, m_projectionViewMAtrix;
+	glm::mat4 view, projection, m_projectionViewMatrix;
 
-	unsigned int m_VAO, m_VBO, m_IBO, m_programID, m_texture;
+	unsigned int m_VAO, m_VBO, m_IBO;
+	unsigned int m_programID;
+	unsigned int m_texture;
 };
