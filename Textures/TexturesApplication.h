@@ -37,5 +37,5 @@ private:
 
 	unsigned int m_VAO, m_VBO, m_IBO;
 	unsigned int m_programID;
-	unsigned int m_texture;
+	unsigned int m_texture, m_texture2;
 };

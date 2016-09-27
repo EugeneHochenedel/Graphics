@@ -46,6 +46,20 @@ bool Texture::startup()
 	//Frees the data loaded with STB... whatever that means
 	stbi_image_free(data);
 
+	unsigned char* data2 = stbi_load("textures/pentagon.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	//Generates an OpenGL texture handle
+	glGenTextures(1, &m_texture2);
+	//Binds the texture to the correct slot for the dimension
+	glBindTexture(GL_TEXTURE_2D, m_texture2);
+	//Specifies the data for the texture, including the format, resolution, and variable type
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+	//Specifies the filtering to correctly read the image at various resolutions and ratios
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//Frees the data loaded with STB... whatever that means
+	stbi_image_free(data2);
+
 	const char* vsSource;
 	std::string vertShader = ReadIn("textureVertShader.txt");
 	vsSource = vertShader.c_str();
@@ -108,12 +122,21 @@ void Texture::draw()
 
 	int loc = glGetUniformLocation(m_programID, "ProjectionView");
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
+
+	int loc2 = glGetUniformLocation(m_programID, "ProjectionView");
+	glUniformMatrix4fv(loc2, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_texture2);
+
 	loc = glGetUniformLocation(m_programID, "diffuse");
 	glUniform1i(loc, 0);
+
+	loc2 = glGetUniformLocation(m_programID, "combined");
+	glUniform1i(loc2, 1);
 
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

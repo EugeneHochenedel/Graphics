@@ -1,10 +1,25 @@
 #version 410
 
 in vec2 vTexCoord;
+//in vec2 vReCoord;
 out vec4 FragColor;
+//out vec4 AnotherOne;
 uniform sampler2D diffuse;
+//uniform sampler2D mirrored;
+//uniform sampler2D brighten;
+uniform sampler2D combined;
 
 void main()
 {
-	FragColor = texture(diffuse,vTexCoord);
+	vec4 a = texture(diffuse, vTexCoord);
+	vec4 b = texture(combined, vTexCoord);
+
+	vec3 newA = b.a * b.rgb;
+	vec3 newB = 2 * a.rgb * (b.a);
+
+	//mirrored = diffuse + vec2(4, 5);
+	//vec2 reflected = vTexCoord * -1
+
+	//AnotherOne = texture(mirrored, vReCoord);
+	FragColor = vec4(mix(newA, newB, .5f), 1);
 }
