@@ -1,3 +1,6 @@
+#define STB_IMAGE_IMPLEMENTATION
+
+#include <stb_image.h>
 #include "TexturesApplication.h"
 
 Texture::Texture()
@@ -66,7 +69,7 @@ bool Texture::startup()
 {
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 
-	unsigned char* data = stbi_load("./dep/stb/data/textures/create.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+	unsigned char* data = stbi_load("./dep/stb/data/textures/crate.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
 	//Generates an OpenGL texture handle
 	glGenTextures(1, &m_texture);
@@ -130,7 +133,18 @@ bool Texture::update()
 
 void Texture::draw()
 {
+	glUseProgram(m_programID);
 
+	int loc = glGetUniformLocation(m_programID, "ProjectionView");
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+
+	loc = glGetUniformLocation(m_programID, "diffuse");
+	glUniform1i(loc, 0);
+
+	glBindVertexArray(m_VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
 
 void Texture::shutdown()
