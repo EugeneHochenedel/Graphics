@@ -32,7 +32,7 @@ bool Texture::startup()
 	createQuad();
 
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
-	unsigned char* data = stbi_load("textures/crate.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+	unsigned char* data = stbi_load("data/textures/crate.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
 	//Generates an OpenGL texture handle
 	glGenTextures(1, &m_texture);
@@ -46,7 +46,7 @@ bool Texture::startup()
 	//Frees the data loaded with STB... whatever that means
 	stbi_image_free(data);
 
-	unsigned char* data2 = stbi_load("textures/pentagon.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+	unsigned char* data2 = stbi_load("data/textures/pentagon.png", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
 	//Generates an OpenGL texture handle
 	glGenTextures(1, &m_texture2);
