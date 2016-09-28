@@ -7,6 +7,6 @@ uniform sampler2D combined;
 
 void main()
 {
-	
-	FragColor = texture(diffuse, vTexCoord).rgra * texture(combined, vTexCoord);
+	//Blends two textures
+	FragColor = texture(diffuse, vTexCoord).rrra * texture(combined, vTexCoord);
 }
