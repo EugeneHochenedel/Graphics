@@ -37,12 +37,14 @@ public:
 
 	std::string ReadIn(std::string);
 	
-	void createPlain();
-
+	void planeBuffer();
+	
 private:
 	GLFWwindow* screen;
 
 	glm::mat4 view, projection, m_projectionViewMatrix;
+
+	int indexCounter;
 
 	unsigned int m_VAO, m_VBO, m_IBO;
 	unsigned int m_programID;
