@@ -1,9 +1,9 @@
 #pragma once
 #define GLM_SWIZZLE 
 #define GLM_FORCE_PURE
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/epsilon.hpp>
+#include <glm.hpp>
+#include <gtc/quaternion.hpp>
+#include <gtc/epsilon.hpp>
 #include <map>
 #include <vector>
 #include <string>

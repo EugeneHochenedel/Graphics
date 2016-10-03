@@ -10,6 +10,15 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <FBXFile.h>
+
+struct Vertex
+{
+	float x, y, z, w;
+	float normX, normY, normZ, normW;
+	float tanX, tanY, tanZ, tanW;
+	float s, t;
+};
 
 class Application
 {
@@ -28,14 +37,19 @@ public:
 	bool update() override;
 	void draw() override;
 	void shutdown() override;
+	
 	void createQuad();
+	void largeVertex();
+	//void createOpenGLBuffers(FBXFile* fbx);
+	
 	std::string ReadIn(std::string);
 
 private:
 	GLFWwindow* screen;
+	//FBXFile* m_fbx;
 	glm::mat4 view, projection, m_projectionViewMatrix;
 
 	unsigned int m_VAO, m_VBO, m_IBO;
 	unsigned int m_programID;
-	unsigned int m_texture, m_texture2;
+	unsigned int m_texture, m_texture2, m_normalmap;
 };
