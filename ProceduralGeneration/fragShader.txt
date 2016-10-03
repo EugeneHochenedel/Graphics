@@ -3,7 +3,10 @@
 in vec2 vertUV;
 out vec4 fragColor;
 
+uniform sampler2D perlin_texture;
+
 void main()
 {
-	//fragColor = vec4(1, 1, 1, 1);
+	fragColor = texture(perlin_texture, vertUV).rrrr;
+	fragColor.a = 1;
 }

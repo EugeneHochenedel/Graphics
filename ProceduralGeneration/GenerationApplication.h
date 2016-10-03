@@ -10,6 +10,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <FBXFile.h>
 
 struct Vertex
 {
@@ -39,6 +40,9 @@ public:
 	
 	void planeBuffer();
 	
+	//float noise();
+
+
 private:
 	GLFWwindow* screen;
 
@@ -48,5 +52,5 @@ private:
 
 	unsigned int m_VAO, m_VBO, m_IBO;
 	unsigned int m_programID;
-
+	unsigned int m_perlin_texture;
 };

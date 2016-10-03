@@ -168,6 +168,7 @@ void Texture::draw()
 
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	
 
 	/*for (unsigned int i = 0; i < m_fbx->getMeshCount(); i++)
 	{

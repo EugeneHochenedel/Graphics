@@ -1,4 +1,5 @@
 #include "GenerationApplication.h"
+#include <stb_image.h>
 
 Procedural::Procedural()
 {
@@ -18,16 +19,40 @@ Procedural::Procedural()
 		glfwTerminate();
 	}
 
-	view = glm::lookAt(glm::vec3(10, 10, 10), glm::vec3(0), glm::vec3(0, 1, 0));
+	view = glm::lookAt(glm::vec3(0, 10, 25), glm::vec3(0), glm::vec3(0, 1, 0));
 	projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
 
+	glEnable(GL_BLEND);
 	glClearColor(0.25f, 0.25f, 0.25f, 1);
 	glEnable(GL_DEPTH_TEST);
 }
 
 bool Procedural::startup()
 {
-	
+	int dims = 25;
+	float* perlin_data = new float[dims * dims];
+	float scale = (1.0f / dims) * 3;
+
+	for (int x = 0; x < 25; x++)
+	{
+		for (int y = 0; y < 25; y++)
+		{
+			perlin_data[y * dims + x] = glm::perlin(glm::vec2(x, y) * scale) * 0.5f + 0.5f;
+		}
+	}
+
+	glGenTextures(1, &m_perlin_texture);
+	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 25, 25, 0, GL_RED, GL_FLOAT, perlin_data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	stbi_image_free(perlin_data);
 
 	const char* vsSource;
 	std::string vertShader = ReadIn("vertShader.txt");
@@ -39,7 +64,7 @@ bool Procedural::startup()
 
 	int success = GL_FALSE;
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	unsigned int fragmentShader = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 	glShaderSource(vertexShader, 1, (const char**)&vsSource, 0);
 	glCompileShader(vertexShader);
@@ -89,11 +114,18 @@ void Procedural::draw()
 	planeBuffer();
 	m_projectionViewMatrix = projection * view;
 	
-	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_projectionViewMatrix));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
+
+	projectionViewUniform = glGetUniformLocation(m_programID, "perlin_texture");
+	glUniform1i(projectionViewUniform, 0);
 
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, indexCounter, GL_UNSIGNED_INT, 0);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 	glfwSwapBuffers(screen);
 	glfwPollEvents();
@@ -124,34 +156,34 @@ std::string Procedural::ReadIn(std::string fileName)
 
 void Procedural::planeBuffer()
 {
-	int height = 25;
-	int width = 25;
+	int rows = 25;
+	int columns = 25;
 
-	Vertex* verts = new Vertex[height * width];
-	for (int cols = 0; cols < width; cols++)
+	Vertex* verts = new Vertex[rows * columns];
+	for (int r = 0; r < rows; r++)
 	{
-		for (int rows = 0; rows < height; rows++)
+		for (int c = 0; c < columns; c++)
 		{
-			verts[cols * height + rows].position = glm::vec4(rows - height * 0.5f, 0, cols - width * 0.5f, 1);
-			verts[cols * height + rows].UV = glm::vec2(rows *(1.0f / height), cols *(1.0f / width));
+			verts[r * columns + c].position = glm::vec4(c - columns * 0.5f, 0, r - rows * 0.5f, 1);
+			verts[r * rows + c].UV = glm::vec2(c *(1.0f / columns), c *(1.0f / rows));
 		}
 	}
 
-	indexCounter = (height - 1) * (width - 1) * 6;
+	indexCounter = (rows - 1) * (columns - 1) * 6;
 	unsigned int* auiIndex = new unsigned int[indexCounter];
 
 	unsigned int Index = 0;
-	for (int cols = 0; cols < (width - 1); cols++)
+	for (int r = 0; r < (rows - 1); r++)
 	{
-		for (int rows = 0; rows < (height - 1); rows++)
+		for (int c = 0; c < (columns - 1); c++)
 		{
-			auiIndex[Index++] = cols * height + rows;
-			auiIndex[Index++] = (cols + 1) * height + rows;
-			auiIndex[Index++] = (cols + 1) * height + (rows + 1);
+			auiIndex[Index++] = r * columns + c;
+			auiIndex[Index++] = (r + 1) * columns + c;
+			auiIndex[Index++] = (r + 1) * columns + (c + 1);
 
-			auiIndex[Index++] = cols * height + rows;
-			auiIndex[Index++] = (cols + 1) * height + (rows + 1);
-			auiIndex[Index++] = cols * height + (rows + 1);
+			auiIndex[Index++] = r * columns + c;
+			auiIndex[Index++] = (r + 1) * columns + (c + 1);
+			auiIndex[Index++] = r * columns + (c + 1);
 		}
 	}
 
@@ -162,7 +194,7 @@ void Procedural::planeBuffer()
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, (height * width) * sizeof(Vertex), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (rows * columns) * sizeof(Vertex), verts, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
@@ -177,3 +209,18 @@ void Procedural::planeBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
+//float Procedural::noise()
+//{
+//	/*int dims = 25;
+//	float* perlin_data = new float[dims * dims];
+//	float scale = (1.0f / dims) * 3;
+//
+//	for (int x = 0; x < 25; x++)
+//	{
+//		for (int y = 0; y < 25; y++)
+//		{
+//			perlin_data[y* dims + x] = glm::perlin(glm::vec2(x, y) * scale) * 0.5f + 0.5f;
+//		}
+//	}*/
+//}
