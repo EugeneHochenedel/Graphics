@@ -42,5 +42,7 @@
   <ItemGroup>
     <Text Include="textureVertShader.txt" />
     <Text Include="textureFragShader.txt" />
+    <Text Include="advancedFragShader.txt" />
+    <Text Include="advancedVertShader.txt" />
   </ItemGroup>
 </Project>

@@ -127,6 +127,8 @@
     <ClCompile Include="Textures.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="advancedFragShader.txt" />
+    <Text Include="advancedVertShader.txt" />
     <Text Include="textureFragShader.txt" />
     <Text Include="textureVertShader.txt" />
   </ItemGroup>
