@@ -27,6 +27,7 @@ Procedural::Procedural()
 
 bool Procedural::startup()
 {
+	
 
 	const char* vsSource;
 	std::string vertShader = ReadIn("vertShader.txt");
@@ -83,8 +84,16 @@ bool Procedural::update()
 void Procedural::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(m_programID);
 
+	planeBuffer();
 	m_projectionViewMatrix = projection * view;
+	
+	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_projectionViewMatrix));
+
+	glBindVertexArray(m_VAO);
+	glDrawElements(GL_TRIANGLES, indexCounter, GL_UNSIGNED_INT, 0);
 	
 	glfwSwapBuffers(screen);
 	glfwPollEvents();
@@ -113,6 +122,58 @@ std::string Procedural::ReadIn(std::string fileName)
 	return container;
 }
 
+void Procedural::planeBuffer()
 {
+	int height = 25;
+	int width = 25;
 
+	Vertex* verts = new Vertex[height * width];
+	for (int cols = 0; cols < width; cols++)
+	{
+		for (int rows = 0; rows < height; rows++)
+		{
+			verts[cols * height + rows].position = glm::vec4(rows - height * 0.5f, 0, cols - width * 0.5f, 1);
+			verts[cols * height + rows].UV = glm::vec2(rows *(1.0f / height), cols *(1.0f / width));
+		}
+	}
+
+	indexCounter = (height - 1) * (width - 1) * 6;
+	unsigned int* auiIndex = new unsigned int[indexCounter];
+
+	unsigned int Index = 0;
+	for (int cols = 0; cols < (width - 1); cols++)
+	{
+		for (int rows = 0; rows < (height - 1); rows++)
+		{
+			auiIndex[Index++] = cols * height + rows;
+			auiIndex[Index++] = (cols + 1) * height + rows;
+			auiIndex[Index++] = (cols + 1) * height + (rows + 1);
+
+			auiIndex[Index++] = cols * height + rows;
+			auiIndex[Index++] = (cols + 1) * height + (rows + 1);
+			auiIndex[Index++] = cols * height + (rows + 1);
+		}
+	}
+
+	glGenBuffers(1, &m_VBO);
+	glGenBuffers(1, &m_IBO);
+	glGenVertexArrays(1, &m_VAO);
+
+	glBindVertexArray(m_VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBufferData(GL_ARRAY_BUFFER, (height * width) * sizeof(Vertex), verts, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(glm::vec4));
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCounter * sizeof(unsigned int), auiIndex, GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
