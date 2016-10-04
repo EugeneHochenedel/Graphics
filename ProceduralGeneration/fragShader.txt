@@ -4,9 +4,12 @@ in vec2 vertUV;
 out vec4 fragColor;
 
 uniform sampler2D perlin_texture;
+uniform sampler2D grass_texture;
+uniform sampler2D rocks_texture;
+uniform sampler2D snow_texture;
 
 void main()
 {
-	fragColor = texture(perlin_texture, vertUV).rrrr;
+	fragColor = texture(perlin_texture, vertUV).rrrr * texture(grass_texture, vertUV);
 	fragColor.a = 1;
 }

@@ -69,8 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)dep\fbxloader\include;$(SolutionDir)dep\stb;$(SolutionDir)dep\glm;$(SolutionDir)dep\glfw-3.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)dep\fbxloader\lib;$(SolutionDir)dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)dep\stb;$(SolutionDir)dep\glm;$(SolutionDir)dep\glfw-3.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dep\glfw-3.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,7 +79,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>FBXLoader_d.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

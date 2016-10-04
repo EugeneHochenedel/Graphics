@@ -4,10 +4,14 @@ layout(location=0) in vec4 position;
 layout(location=1) in vec2 UV;
 out vec2 vertUV;
 uniform mat4 projectionViewWorldMatrix;
+uniform sampler2D perlin_texture;
 
 void main()
 {
+	vec4 pos = position;
+	pos.y += texture(perlin_texture, UV).r * 5;
+
 	vertUV = UV;
 
-	gl_Position = projectionViewWorldMatrix * position;
+	gl_Position = projectionViewWorldMatrix * pos;
 }

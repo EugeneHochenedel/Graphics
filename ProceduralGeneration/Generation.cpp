@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "GenerationApplication.h"
 #include <stb_image.h>
 
@@ -29,22 +30,17 @@ Procedural::Procedural()
 
 bool Procedural::startup()
 {
-	int dims = 25;
-	float* perlin_data = new float[dims * dims];
-	float scale = (1.0f / dims) * 3;
+	int x = 25, z = 25;
+	int dims = 24;
 
-	for (int x = 0; x < 25; x++)
-	{
-		for (int y = 0; y < 25; y++)
-		{
-			perlin_data[y * dims + x] = glm::perlin(glm::vec2(x, y) * scale) * 0.5f + 0.5f;
-		}
-	}
+	int imageWidth = dims, imageHeight = dims, imageFormat = 0;
+	
+	float* perlin_data = noise(z);
 
 	glGenTextures(1, &m_perlin_texture);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 25, 25, 0, GL_RED, GL_FLOAT, perlin_data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, dims, dims, 0, GL_RED, GL_FLOAT, perlin_data);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -54,6 +50,10 @@ bool Procedural::startup()
 
 	stbi_image_free(perlin_data);
 
+	unsigned char* data = stbi_load("data/textures/grass.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	glGenTextures(1, )
+
 	const char* vsSource;
 	std::string vertShader = ReadIn("vertShader.txt");
 	vsSource = vertShader.c_str();
@@ -61,6 +61,8 @@ bool Procedural::startup()
 	const char* fsSource;
 	std::string fragShader = ReadIn("fragShader.txt");
 	fsSource = fragShader.c_str();
+	
+	planeBuffer(x, z);
 
 	int success = GL_FALSE;
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -111,7 +113,7 @@ void Procedural::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(m_programID);
 
-	planeBuffer();
+	
 	m_projectionViewMatrix = projection * view;
 	
 	int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
@@ -154,36 +156,33 @@ std::string Procedural::ReadIn(std::string fileName)
 	return container;
 }
 
-void Procedural::planeBuffer()
+void Procedural::planeBuffer(const int& x, const int& z)
 {
-	int rows = 25;
-	int columns = 25;
-
-	Vertex* verts = new Vertex[rows * columns];
-	for (int r = 0; r < rows; r++)
+	Vertex* verts = new Vertex[x * z];
+	for (int r = 0; r < x; r++)
 	{
-		for (int c = 0; c < columns; c++)
+		for (int c = 0; c < z; c++)
 		{
-			verts[r * columns + c].position = glm::vec4(c - columns * 0.5f, 0, r - rows * 0.5f, 1);
-			verts[r * rows + c].UV = glm::vec2(c *(1.0f / columns), c *(1.0f / rows));
+			verts[r * z + c].position = glm::vec4(c - z * 0.5f, 0, r - x * 0.5f, 1);
+			verts[r * z + c].UV = glm::vec2(c * (1.0f / z), r * (1.0f / x));
 		}
 	}
 
-	indexCounter = (rows - 1) * (columns - 1) * 6;
+	indexCounter = (x - 1) * (z - 1) * 6;
 	unsigned int* auiIndex = new unsigned int[indexCounter];
 
 	unsigned int Index = 0;
-	for (int r = 0; r < (rows - 1); r++)
+	for (int r = 0; r < (x - 1); r++)
 	{
-		for (int c = 0; c < (columns - 1); c++)
+		for (int c = 0; c < (z - 1); c++)
 		{
-			auiIndex[Index++] = r * columns + c;
-			auiIndex[Index++] = (r + 1) * columns + c;
-			auiIndex[Index++] = (r + 1) * columns + (c + 1);
+			auiIndex[Index++] = r * z + c;
+			auiIndex[Index++] = (r + 1) * z + c;
+			auiIndex[Index++] = (r + 1) * z + (c + 1);
 
-			auiIndex[Index++] = r * columns + c;
-			auiIndex[Index++] = (r + 1) * columns + (c + 1);
-			auiIndex[Index++] = r * columns + (c + 1);
+			auiIndex[Index++] = r * z + c;
+			auiIndex[Index++] = (r + 1) * z + (c + 1);
+			auiIndex[Index++] = r * z + (c + 1);
 		}
 	}
 
@@ -194,7 +193,7 @@ void Procedural::planeBuffer()
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, (rows * columns) * sizeof(Vertex), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (x * z) * sizeof(Vertex), verts, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
@@ -210,17 +209,29 @@ void Procedural::planeBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-//float Procedural::noise()
-//{
-//	/*int dims = 25;
-//	float* perlin_data = new float[dims * dims];
-//	float scale = (1.0f / dims) * 3;
-//
-//	for (int x = 0; x < 25; x++)
-//	{
-//		for (int y = 0; y < 25; y++)
-//		{
-//			perlin_data[y* dims + x] = glm::perlin(glm::vec2(x, y) * scale) * 0.5f + 0.5f;
-//		}
-//	}*/
-//}
+float* Procedural::noise(const int& columns)
+{
+	int dims = columns - 1;
+	float* perlin_data = new float[dims * dims];
+	float scale = (1.0f / dims) * 3;
+	int octaves = 6;
+
+	for (int i = 0; i < dims; i++)
+	{
+		for (int j = 0; j < dims; j++)
+		{
+			float amplitude = 1.0f;
+			float persistence = 0.3f;
+			perlin_data[j * dims + i] = glm::perlin(glm::vec2(i, j) * scale) * 0.5f + 0.5f;;
+
+			for (int ii = 0; ii < octaves; ii++)
+			{
+				float frequency = powf(2, (float)ii);
+				float perlin_sample = glm::perlin(glm::vec2((float)i, (float)j) * scale * frequency) * 0.5f + 0.5f;
+				perlin_data[j * dims + i] += perlin_sample * amplitude;
+				amplitude *= persistence;
+			}
+		}
+	}
+	return perlin_data;
+}

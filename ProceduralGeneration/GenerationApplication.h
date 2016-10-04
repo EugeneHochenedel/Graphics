@@ -10,7 +10,6 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include <FBXFile.h>
 
 struct Vertex
 {
@@ -38,9 +37,9 @@ public:
 
 	std::string ReadIn(std::string);
 	
-	void planeBuffer();
+	void planeBuffer(const int&, const int&);
 	
-	//float noise();
+	float* noise(const int&);
 
 
 private:
@@ -49,8 +48,8 @@ private:
 	glm::mat4 view, projection, m_projectionViewMatrix;
 
 	int indexCounter;
-
+	
 	unsigned int m_VAO, m_VBO, m_IBO;
 	unsigned int m_programID;
-	unsigned int m_perlin_texture;
+	unsigned int m_perlin_texture, m_texture;
 };
