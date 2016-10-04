@@ -23,6 +23,10 @@ Procedural::Procedural()
 	view = glm::lookAt(glm::vec3(0, 10, 25), glm::vec3(0), glm::vec3(0, 1, 0));
 	projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.0f, 0.1f, 1000.0f);
 
+	auto major = ogl_GetMajorVersion();
+	auto minor = ogl_GetMinorVersion();
+	printf("GL: %i.%i\n", major, minor);
+
 	glEnable(GL_BLEND);
 	glClearColor(0.25f, 0.25f, 0.25f, 1);
 	glEnable(GL_DEPTH_TEST);
@@ -33,9 +37,11 @@ bool Procedural::startup()
 	int x = 25, z = 25;
 	int dims = 24;
 
-	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+	int imageWidth = dims, imageHeight = dims, imageFormat = dims;
 	
 	float* perlin_data = noise(x);
+
+	printf("Perlin Value: %i\n", perlin_data);
 
 	glGenTextures(1, &m_perlin_texture);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
@@ -50,21 +56,31 @@ bool Procedural::startup()
 
 	stbi_image_free(perlin_data);
 
-	unsigned char* data = stbi_load("data/textures/grass.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+	unsigned char* data = stbi_load("data/textures/dirt_grass.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
 	glGenTextures(1, &m_texture);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, imageWidth, imageHeight, 0, GL_RED, GL_UNSIGNED_BYTE, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_image_free(data);
 
 	data = stbi_load("data/textures/rocky_ground.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
+	glGenTextures(1, &m_texture1);
+	glBindTexture(GL_TEXTURE_2D, m_texture1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_image_free(data);
 
 	data = stbi_load("data/textures/sand.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
+	glGenTextures(1, &m_texture2);
+	glBindTexture(GL_TEXTURE_2D, m_texture2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_image_free(data);
 
 	const char* vsSource;
@@ -132,8 +148,14 @@ void Procedural::draw()
 	int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
 
-	int projViewMat = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projViewMat, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
+	int tex = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(tex, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
+
+	int tex1 = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(tex1, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
+
+	int tex2 = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(tex2, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
@@ -141,11 +163,23 @@ void Procedural::draw()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_texture1);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_texture2);
+
 	projectionViewUniform = glGetUniformLocation(m_programID, "perlin_texture");
 	glUniform1i(projectionViewUniform, 0);
 
-	projViewMat = glGetUniformLocation(m_programID, "grass_texture");
-	glUniform1i(projViewMat, 1);
+	tex = glGetUniformLocation(m_programID, "grass_texture");
+	glUniform1i(tex, 1);
+
+	tex1 = glGetUniformLocation(m_programID, "rocks_texture");
+	glUniform1i(tex1, 2);
+
+	tex2 = glGetUniformLocation(m_programID, "snow_texture");
+	glUniform1i(tex2, 3);
 
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, indexCounter, GL_UNSIGNED_INT, nullptr);
@@ -244,7 +278,7 @@ float* Procedural::noise(const int& columns)
 		{
 			float amplitude = 1.0f;
 			float persistence = 0.3f;
-			perlin_data[j * dims + i] = glm::perlin(glm::vec2(i, j) * scale) * 0.5f + 0.5f;;
+			perlin_data[j * dims + i] = 0;
 
 			for (int ii = 0; ii < octaves; ii++)
 			{
