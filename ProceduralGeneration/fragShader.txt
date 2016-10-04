@@ -5,8 +5,8 @@ out vec4 fragColor;
 
 uniform sampler2D perlin_texture;
 uniform sampler2D grass_texture;
-uniform sampler2D rocks_texture;
-uniform sampler2D snow_texture;
+//uniform sampler2D rocks_texture;
+//uniform sampler2D snow_texture;
 
 void main()
 {

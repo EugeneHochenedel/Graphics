@@ -33,9 +33,9 @@ bool Procedural::startup()
 	int x = 25, z = 25;
 	int dims = 24;
 
-	int imageWidth = dims, imageHeight = dims, imageFormat = 0;
+	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 	
-	float* perlin_data = noise(z);
+	float* perlin_data = noise(x);
 
 	glGenTextures(1, &m_perlin_texture);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
@@ -52,7 +52,20 @@ bool Procedural::startup()
 
 	unsigned char* data = stbi_load("data/textures/grass.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
-	glGenTextures(1, )
+	glGenTextures(1, &m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	stbi_image_free(data);
+
+	data = stbi_load("data/textures/rocky_ground.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	stbi_image_free(data);
+
+	data = stbi_load("data/textures/sand.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	stbi_image_free(data);
 
 	const char* vsSource;
 	std::string vertShader = ReadIn("vertShader.txt");
@@ -117,16 +130,25 @@ void Procedural::draw()
 	m_projectionViewMatrix = projection * view;
 	
 	int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_projectionViewMatrix));
+	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
+
+	int projViewMat = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(projViewMat, 1, GL_FALSE, glm::value_ptr(m_projectionViewMatrix));
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+
 	projectionViewUniform = glGetUniformLocation(m_programID, "perlin_texture");
 	glUniform1i(projectionViewUniform, 0);
 
+	projViewMat = glGetUniformLocation(m_programID, "grass_texture");
+	glUniform1i(projViewMat, 1);
+
 	glBindVertexArray(m_VAO);
-	glDrawElements(GL_TRIANGLES, indexCounter, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, indexCounter, GL_UNSIGNED_INT, nullptr);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 	glfwSwapBuffers(screen);
@@ -163,8 +185,8 @@ void Procedural::planeBuffer(const int& x, const int& z)
 	{
 		for (int c = 0; c < z; c++)
 		{
-			verts[r * z + c].position = glm::vec4(c - z * 0.5f, 0, r - x * 0.5f, 1);
-			verts[r * z + c].UV = glm::vec2(c * (1.0f / z), r * (1.0f / x));
+			verts[r * z + c].position = glm::vec4(r - x * 0.5f, 0, c - z * 0.5f, 1);
+			verts[r * z + c].UV = glm::vec2(r * (1.0f / x), c * (1.0f / z));
 		}
 	}
 
