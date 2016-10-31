@@ -3,15 +3,13 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
-#include <list>
 #include "src\gl_core_4_4.h"
 #include <GLFW\glfw3.h>
 #include "src\Gizmos.h"
 #include <glm.hpp>
 #include <ext.hpp>
-
-#define GLM_SWIZZLE
-#define GLM_FORCE_PURE
+#include <string>
+#include <fstream>
 
 struct Vertex
 {
@@ -38,13 +36,15 @@ public:
 	void draw() override;
 	void shutdown() override;
 
+	std::string ReadIn(std::string);
 
 	void generateGrid();
+	unsigned int* sphereIndex(const int&, const int&);
 	//void generateCube();
-	Vertex* generateHalfCirclePoints(unsigned int, float);
-	Vertex* generateCircPoints(unsigned int, unsigned int, Vertex* &halfSphere);
-	unsigned int* generateIndices(unsigned int, unsigned int);
-	void generateHalfCircle();
+	//Vertex* generateHalfCirclePoints(unsigned int, float);
+	//Vertex* generateCircPoints(unsigned int, unsigned int, Vertex* &halfSphere);
+	//unsigned int* generateIndices(unsigned int, unsigned int);
+	void halfCircle(const int&, const int&);
 	//void generateSphere();
 	std::vector<unsigned int> indicesHolder;
 
@@ -54,12 +54,10 @@ private:
 	GLFWwindow *screen;
 
 	//Vertex and Index buffers
-	unsigned int m_VAO;
-	unsigned int m_VBO;
-	unsigned int m_IBO;
+	unsigned int m_VAO, m_VBO, m_IBO;
 
 	//ID of compiled shader
 	unsigned int m_programID;
 
-	unsigned int indexCounter;
+	int indexCounter;
 };

@@ -265,9 +265,10 @@ void Procedural::planeBuffer(const int& x, const int& z)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+//Generates Perlin Values assuming the plane is a square 
 float* Procedural::noise(const int& columns)
 {
-	int dims = columns - 1;
+	int dims = columns;
 	float* perlin_data = new float[dims * dims];
 	float scale = (1.0f / dims) * 3;
 	int octaves = 6;
@@ -279,7 +280,7 @@ float* Procedural::noise(const int& columns)
 			float amplitude = 1.0f;
 			float persistence = 0.3f;
 			perlin_data[j * dims + i] = 0;
-
+			
 			for (int ii = 0; ii < octaves; ii++)
 			{
 				float frequency = powf(2, (float)ii);
