@@ -6,10 +6,13 @@ int main() {
 	
 	// change startup application
 	BaseApplication* app = new LightingSphereApplication();
-	if (app->startup())
+	if (app->startup() == true) 
+	{
 		app->run();
+		
+	}
 	app->shutdown();
-
+	
 	system("pause");
 	return 0;
 }

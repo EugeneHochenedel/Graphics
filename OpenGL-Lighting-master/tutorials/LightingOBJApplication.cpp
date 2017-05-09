@@ -21,14 +21,33 @@ LightingOBJApplication::LightingOBJApplication()
 
 }
 
-LightingOBJApplication::~LightingOBJApplication() {
+LightingOBJApplication::~LightingOBJApplication() 
+{
+	glfwInit();
+	m_window = glfwCreateWindow(1280, 720, "Lighting", nullptr, nullptr);
 
+	if (m_window == nullptr)
+	{
+		glfwTerminate();
+	}
+
+	glfwMakeContextCurrent(m_window);
+
+	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
+	{
+		glfwDestroyWindow(m_window);
+		glfwTerminate();
+	}
+
+	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.25f, 0.25f, 0.25f, 1);
 }
 
 bool LightingOBJApplication::startup() {
 
 	// create a basic window
-	createWindow("AIE Textured OBJ Application", 1280, 720);
+	//createWindow("AIE Textured OBJ Application", 1280, 720);
 
 	// start the gizmo system that can draw basic immediate-mode shapes
 	Gizmos::create();
@@ -45,16 +64,16 @@ bool LightingOBJApplication::startup() {
 
 	// load a mesh
 	m_mesh = new Mesh();
-	if (m_mesh->loadObj("./models/stanford/dragon.obj", true, true) == false)
+	if (m_mesh->loadObj("bin/models/stanford/dragon.obj", true, true) == false)
 		return false;
 	
 	// load a shader
 	m_shader = new Shader();
-	if (m_shader->loadShader(GL_VERTEX_SHADER, "./shaders/phong.vert") == false) {
+	if (m_shader->loadShader(GL_VERTEX_SHADER, "bin/shaders/phong.vert") == false) {
 		printf("Vertex Shader Error: %s\n", m_shader->getLastError());
 		return false;
 	}
-	if (m_shader->loadShader(GL_FRAGMENT_SHADER, "./shaders/phong.frag") == false) {
+	if (m_shader->loadShader(GL_FRAGMENT_SHADER, "bin/shaders/phong.frag") == false) {
 		printf("Fragment Shader Error: %s\n", m_shader->getLastError());
 		return false;
 	}
@@ -62,6 +81,10 @@ bool LightingOBJApplication::startup() {
 		printf("Shader Link Error: %s\n", m_shader->getLastError());
 		return false;
 	}
+
+	auto major = ogl_GetMajorVersion();
+	auto minor = ogl_GetMinorVersion();
+	printf("GL: %i.%i\n", major, minor);
 
 	return true;
 }
@@ -77,13 +100,43 @@ void LightingOBJApplication::shutdown() {
 	Gizmos::destroy();
 
 	// destroy our window properly
-	destroyWindow();
+	//destroyWindow();
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }
 
 bool LightingOBJApplication::update(float deltaTime) {
 	
 	// close the application if the window closes or we press escape
-	if (glfwWindowShouldClose(m_window) ||
+	/*if (glfwWindowShouldClose(m_window) ||
+		glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		return false;*/
+
+	while (glfwWindowShouldClose(m_window) == false && glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
+	{
+		m_camera->update(deltaTime);
+
+		float time = (float)glfwGetTime();
+		m_directionalLight.direction = vec3(sinf(time), 0, cosf(time));
+
+		Gizmos::clear();
+
+		vec4 white(1, 1, 1, 0);
+		vec4 black(0, 0, 0, 1);
+
+		for (int i = 0; i < 21; i++)
+		{
+			Gizmos::addLine(vec3(-10 + i, 0, 10), vec3(-10 + i, 0, -10), i == 10 ? white : black);
+			Gizmos::addLine(vec3(10, 0, -10 + i), vec3(-10, 0, -10 + i), i == 10 ? white : black);
+		}
+		Gizmos::addTransform(mat4(1));
+
+		return true;
+	}
+
+	return false;
+
+	/*if (glfwWindowShouldClose(m_window) ||
 		glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		return false;
 
@@ -111,7 +164,7 @@ bool LightingOBJApplication::update(float deltaTime) {
 	Gizmos::addTransform(mat4(1));
 
 	// return true, else the application closes
-	return true;
+	return true;*/
 }
 
 void LightingOBJApplication::draw() {
@@ -168,4 +221,7 @@ void LightingOBJApplication::draw() {
 	mat4 guiMatrix = glm::ortho<float>(0, 0, (float)width, (float)height);
 
 	Gizmos::draw2D(guiMatrix);
+
+	glfwSwapBuffers(m_window);
+	glfwPollEvents();
 }

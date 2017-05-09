@@ -15,11 +15,11 @@ public:
 	LightingSphereApplication();
 	virtual ~LightingSphereApplication();
 
-	virtual bool startup();
-	virtual void shutdown();
+	bool startup() override;
+	void shutdown() override;
 
-	virtual bool update(float deltaTime);
-	virtual void draw();
+	bool update(float deltaTime) override;
+	void draw() override;
 
 private:
 

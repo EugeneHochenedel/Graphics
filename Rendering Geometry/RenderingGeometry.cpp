@@ -185,9 +185,9 @@ void Renderer::generateGrid()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-/*
-void Renderer::generateCube()
-{
+
+//void Renderer::generateCube()
+//{
 //	Vertex Aside[8];
 //
 //	unsigned int indecies1[4] = { 0, 2, 1, 3 };
@@ -290,7 +290,7 @@ void Renderer::generateCube()
 //
 //	glBindBuffer(GL_ARRAY_BUFFER, 0);
 //	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//}*/
+//}
 
 void Renderer::halfCircle(const int& points, const int& radius)
 {
@@ -299,7 +299,7 @@ void Renderer::halfCircle(const int& points, const int& radius)
 	Vertex* aoPoints = new Vertex[points];
 	for (int i = 0; i < points; i++)
 	{
-		double theta = glm::pi<float>() * i / piexes
+		double theta = glm::pi<float>() * i / points;
 	}
 }
 
